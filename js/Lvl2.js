@@ -69,26 +69,33 @@ class Lvl2 extends Phaser.Scene {
     }
     
     update() {
-        if (gameOver){
-            this.scene.stop('Lvl2');
-            this.scene.start('PantallaGameOver');
-        };
-
-        if (cursors.left.isDown) {
-            player.setVelocityX(-160);
-            player.anims.play('left', true);
-        } else if (cursors.right.isDown) {
-            player.setVelocityX(160);
-            player.anims.play('right', true);
-        } else {
-            player.setVelocityX(0);
-            player.anims.play('turn');
+        if (gameOver && !this.hasHandledGameOver) {
+            this.hasHandledGameOver = true; // para que no se llame muchas veces
+    
+            // Esperar 1 segundo antes de cambiar de escena
+            this.time.delayedCall(1000, () => {
+                this.scene.stop('Lvl2');
+                this.scene.start('PantallaGameOver');
+            }, [], this);
         }
-
-        if (cursors.up.isDown && player.body.touching.down) {
-            player.setVelocityY(-330);
+    
+        if (!gameOver) {
+            if (cursors.left.isDown) {
+                player.setVelocityX(-160);
+                player.anims.play('left', true);
+            } else if (cursors.right.isDown) {
+                player.setVelocityX(160);
+                player.anims.play('right', true);
+            } else {
+                player.setVelocityX(0);
+                player.anims.play('turn');
+            }
+    
+            if (cursors.up.isDown && player.body.touching.down) {
+                player.setVelocityY(-330);
+            }
         }
-    }
+    }    
 
     collectStar(player, gallina) {
         gallina.disableBody(true, true);
