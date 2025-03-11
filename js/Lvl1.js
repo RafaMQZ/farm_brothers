@@ -1,5 +1,5 @@
 var player;
-var stars;
+var pacas;
 var bombs;
 var platforms;
 var cursors;
@@ -14,27 +14,27 @@ class Lvl1 extends Phaser.Scene {
 
     preload() {
         this.load.image('bg', 'media/mainBG.png');
-        this.load.image('sky', 'media/bg.png');
-        this.load.image('ground', 'media/plataforma.png');
-        this.load.image('floor', 'media/floor.png');
-        this.load.image('star', 'media/paca.png');
+        this.load.image('sky1', 'media/bg.png');
+        this.load.image('ground1', 'media/plataforma.png');
+        this.load.image('floor1', 'media/floor.png');
+        this.load.image('paca', 'media/paca.png');
         this.load.image('bomb', 'media/bomb.png');
         this.load.spritesheet('dude', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
     }
 
     create() {
         // Fondo
-        this.add.image(400, 300, 'sky');
+        this.add.image(400, 300, 'sky1');
 
         // Puntaje
         scoreText = this.add.text(16, 0, 'score: ', { fontSize: '32px', fill: '#000' });
 
         // Plataformas
         platforms = this.physics.add.staticGroup();
-        platforms.create(400, 600, 'floor');
-        platforms.create(610, 430, 'ground');
-        platforms.create(50, 280, 'ground');
-        platforms.create(750, 260, 'ground');
+        platforms.create(400, 600, 'floor1');
+        platforms.create(610, 430, 'ground1');
+        platforms.create(50, 280, 'ground1');
+        platforms.create(750, 260, 'ground1');
 
         // Jugador
         player = this.physics.add.sprite(100, 420, 'dude');
@@ -65,14 +65,14 @@ class Lvl1 extends Phaser.Scene {
         // Controles
         cursors = this.input.keyboard.createCursorKeys();
 
-        // Estrellas
-        stars = this.physics.add.group({
-            key: 'star',
+        // Pacas
+        pacas = this.physics.add.group({
+            key: 'paca',
             repeat: 11,
             setXY: { x: 12, y: 0, stepX: 70 }
         });
 
-        stars.children.iterate(child => {
+        pacas.children.iterate(child => {
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
         });
 
@@ -81,9 +81,9 @@ class Lvl1 extends Phaser.Scene {
 
         // Colisiones
         this.physics.add.collider(player, platforms);
-        this.physics.add.collider(stars, platforms);
+        this.physics.add.collider(pacas, platforms);
         this.physics.add.collider(bombs, platforms);
-        this.physics.add.overlap(player, stars, this.collectStar, null, this);
+        this.physics.add.overlap(player, pacas, this.collectStar, null, this);
         this.physics.add.collider(player, bombs, this.hitBomb, null, this);
     }
 
@@ -106,14 +106,14 @@ class Lvl1 extends Phaser.Scene {
         }
     }
 
-    collectStar(player, star) {
-        star.disableBody(true, true);
+    collectStar(player, paca) {
+        paca.disableBody(true, true);
 
         score += 10;
         scoreText.setText('Score: ' + score);
 
-        if (stars.countActive(true) === 0) {
-            /*stars.children.iterate(child => {
+        if (pacas.countActive(true) === 0) {
+            /*pacas.children.iterate(child => {
                 child.enableBody(true, child.x, 0, true, true);
             });
 
@@ -124,7 +124,7 @@ class Lvl1 extends Phaser.Scene {
             bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
             bomb.allowGravity = false;*/
             this.scene.stop('Lvl1');
-                this.scene.start('Lvl2'); // Cambia a la escena del segundo nivel
+            this.scene.start('Lvl2'); // Cambia a la escena del segundo nivel
         }
     }
 
