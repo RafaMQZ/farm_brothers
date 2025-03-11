@@ -76,8 +76,13 @@ class PantallaInicio extends Phaser.Scene {
             this.scene.start('PantallaUsuario'); // Cambia a la pantalla para ingresar el nombre
         });
 
-        // Efectos al pasar el mouse sobre el botón
-        playButton.on('pointerover', () => playButton.setScale(1.1));
-        playButton.on('pointerout', () => playButton.setScale(1));
+        // Efecto al pasar el mouse sobre el botón
+        playButton.on('pointerover', () => {
+            playButton.setScale(1.1);
+        });
+
+        playButton.on('pointerout', () => {
+            playButton.setScale(1);
+        });
     }
 }
