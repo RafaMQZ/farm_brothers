@@ -1,7 +1,3 @@
-
-
-
-
 var player;
 var stars;
 var bombs;
@@ -19,8 +15,8 @@ class Lvl2 extends Phaser.Scene {
     preload() {
         this.load.image('bg', 'media/mainBG.png');
         this.load.image('sky2', 'media/bg2.png');
-        this.load.image('ground', 'media/plataforma.png');
-        this.load.image('floor', 'media/floor.png');
+        this.load.image('ground2', 'media/plataforma2.png');
+        this.load.image('floor2', 'media/floor2.png');
         this.load.image('star', 'media/paca.png');
         this.load.image('bomb', 'media/bomb.png');
         this.load.spritesheet('dude', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
@@ -38,10 +34,10 @@ class Lvl2 extends Phaser.Scene {
     
         // Plataformas
         platforms = this.physics.add.staticGroup();
-        platforms.create(400, 600, 'floor');
-        platforms.create(610, 430, 'ground');
-        platforms.create(50, 280, 'ground');
-        platforms.create(750, 260, 'ground');
+        platforms.create(400, 600, 'floor2');
+        platforms.create(610, 430, 'ground2');
+        platforms.create(50, 280, 'ground2');
+        platforms.create(750, 260, 'ground2');
     
         // Jugador
         player = this.physics.add.sprite(100, 420, 'dude');
