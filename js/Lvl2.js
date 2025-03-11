@@ -18,6 +18,7 @@ class Lvl2 extends Phaser.Scene {
         this.load.image('floor2', 'media/floor2.png');
         this.load.image('gallina', 'media/paca.png');
         this.load.image('bomb', 'media/bomb.png');
+        this.load.image('text', 'media/gameOver_txt.png'); //pantalla de game over
         this.load.spritesheet('dude', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
     }
 
@@ -72,11 +73,21 @@ class Lvl2 extends Phaser.Scene {
         if (gameOver && !this.hasHandledGameOver) {
             this.hasHandledGameOver = true; // para que no se llame muchas veces
     
-            // Esperar 1 segundo antes de cambiar de escena
-            this.time.delayedCall(1000, () => {
-                this.scene.stop('Lvl2');
-                this.scene.start('PantallaGameOver');
-            }, [], this);
+            let overlay = this.add.graphics().setDepth(10);
+            overlay.fillStyle(0x000000, 0.5); // Color negro con opacidad
+            overlay.fillRect(0, 0, this.cameras.main.width, this.cameras.main.height);
+
+            // texto de game over
+            let txt = this.add.image(400, 300, 'text').setDepth(11);
+
+            this.tweens.add({
+                targets: txt,
+                y: 130,
+                duration: 1000,
+                ease: 'Sine.easeInOut',
+                yoyo: true,
+                repeat: -1
+            });
         }
     
         if (!gameOver) {
