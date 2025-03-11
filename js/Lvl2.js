@@ -1,5 +1,5 @@
 var player;
-var stars;
+var gallinas;
 var bombs;
 var platforms;
 var cursors;
@@ -17,7 +17,7 @@ class Lvl2 extends Phaser.Scene {
         this.load.image('sky2', 'media/bg2.png');
         this.load.image('ground2', 'media/plataforma2.png');
         this.load.image('floor2', 'media/floor2.png');
-        this.load.image('star', 'media/paca.png');
+        this.load.image('gallina', 'media/paca.png');
         this.load.image('bomb', 'media/bomb.png');
         this.load.spritesheet('dude', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
     }
@@ -48,13 +48,13 @@ class Lvl2 extends Phaser.Scene {
         cursors = this.input.keyboard.createCursorKeys();
         
         // Estrellas
-        stars = this.physics.add.group({
-            key: 'star',
+        gallinas = this.physics.add.group({
+            key: 'gallina',
             repeat: 11,
             setXY: { x: 12, y: 0, stepX: 70 }
         });
     
-        stars.children.iterate(child => {
+        gallinas.children.iterate(child => {
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
         });
     
@@ -63,9 +63,9 @@ class Lvl2 extends Phaser.Scene {
     
         // Colisiones
         this.physics.add.collider(player, platforms);
-        this.physics.add.collider(stars, platforms);
+        this.physics.add.collider(gallinas, platforms);
         this.physics.add.collider(bombs, platforms);
-        this.physics.add.overlap(player, stars, this.collectStar, null, this);
+        this.physics.add.overlap(player, gallinas, this.collectStar, null, this);
         this.physics.add.collider(player, bombs, this.hitBomb, null, this);
     }
     
@@ -88,14 +88,14 @@ class Lvl2 extends Phaser.Scene {
         }
     }
 
-    collectStar(player, star) {
-        star.disableBody(true, true);
+    collectStar(player, gallina) {
+        gallina.disableBody(true, true);
 
         score += 10;
         scoreText.setText('Score: ' + score);
 
-        if (stars.countActive(true) === 0) {
-            stars.children.iterate(child => {
+        if (gallinas.countActive(true) === 0) {
+            gallinas.children.iterate(child => {
                 child.enableBody(true, child.x, 0, true, true);
             });
 
