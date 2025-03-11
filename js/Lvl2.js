@@ -46,7 +46,7 @@ class Lvl2 extends Phaser.Scene {
         // Controles
         cursors = this.input.keyboard.createCursorKeys();
         
-        // Estrellas
+        // Gallinas
         gallinas = this.physics.add.group({
             key: 'gallina',
             repeat: 11,
@@ -69,7 +69,10 @@ class Lvl2 extends Phaser.Scene {
     }
     
     update() {
-        if (gameOver) return;
+        if (gameOver){
+            this.scene.stop('Lvl2');
+            this.scene.start('PantallaGameOver');
+        };
 
         if (cursors.left.isDown) {
             player.setVelocityX(-160);
