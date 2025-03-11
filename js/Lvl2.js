@@ -13,7 +13,6 @@ class Lvl2 extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('bg', 'media/mainBG.png');
         this.load.image('sky2', 'media/bg2.png');
         this.load.image('ground2', 'media/plataforma2.png');
         this.load.image('floor2', 'media/floor2.png');

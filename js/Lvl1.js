@@ -13,13 +13,12 @@ class Lvl1 extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('bg', 'media/mainBG.png');
-        this.load.image('sky1', 'media/bg.png');
-        this.load.image('ground1', 'media/plataforma.png');
-        this.load.image('floor1', 'media/floor.png');
+        this.load.image('sky1', 'media/bg1.png');
+        this.load.image('ground1', 'media/plataforma1.png');
+        this.load.image('floor1', 'media/floor1.png');
         this.load.image('paca', 'media/paca.png');
         this.load.image('bomb', 'media/bomb.png');
-        this.load.spritesheet('dude', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
+        this.load.spritesheet('dude', 'media/player1.png', { frameWidth: 46, frameHeight: 90 });
     }
 
     create() {
