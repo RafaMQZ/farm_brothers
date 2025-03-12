@@ -10,7 +10,7 @@ var config = {
             debug: false
         }
     },
-    scene: [PantallaInicio, PantallaUsuario, Lvl1, Lvl2]
+    scene: [PantallaUsuario, Lvl1, Lvl2]
 };
 
 

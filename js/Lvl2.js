@@ -19,7 +19,7 @@ class Lvl2 extends Phaser.Scene {
         this.load.image('gallina', 'media/paca.png');
         this.load.image('bomb', 'media/bomb.png');
         this.load.image('text', 'media/gameOver_txt.png'); //pantalla de game over
-        this.load.spritesheet('dude', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
+        this.load.spritesheet('dude', playerPath, { frameWidth: 46, frameHeight: 90 });
     }
 
     create() {
@@ -88,6 +88,9 @@ class Lvl2 extends Phaser.Scene {
                 yoyo: true,
                 repeat: -1
             });
+
+            //boton de regresar
+
         }
     
         if (!gameOver) {
