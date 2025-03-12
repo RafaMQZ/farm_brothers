@@ -93,7 +93,7 @@ body {
 
     grid-template-areas: "instrucciones  instrucciones"
                          "avatares       dropzone"
-                         "boton          boton";
+                         "boton1         boton2";
 }
 
 .instrucciones{
@@ -143,23 +143,33 @@ body {
     border-radius: 5px;
 }
 
-#selectAvtr{
-    grid-area: boton;
+#selectAvtr,
+#regresarInicio{
     border: none;
     background-color: transparent;
     padding: 0;
     display: flex;
-    justify-content: right;
     align-items: center;
 }
 
-#selectAvtr img{
+#selectAvtr img, 
+#regresarInicio img{
     width: 80px;
     height: auto;
     transition: transform 0.3s ease;
 }
 
-
-#selectAvtr img:hover{
+#selectAvtr img:hover,
+#regresarInicio img:hover{
     transform: scale(1.1);
+}
+
+#regresarInicio{
+    grid-area: boton1;
+    justify-content: left;
+}
+
+#selectAvtr{
+    grid-area: boton2;
+    justify-content: right;
 }
