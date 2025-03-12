@@ -115,8 +115,7 @@ function selectAvatar(){
             });
             document.getElementById('pantallaAvatar').style.display = 'none';
         }
-        //logica para pasar a Lvl1
-        console.log("pasamos aqui");
+        
         ejecutarLvl1();
     }
     else {
@@ -324,6 +323,7 @@ function ejecutarLvl1(){
             this.load.image('text', 'media/gameOver_txt.png'); //pantalla de game over
             this.load.spritesheet('dude1', 'media/player1.png', { frameWidth: 46, frameHeight: 90 });
             this.load.spritesheet('dude2', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
+            this.load.spritesheet('gallinita', 'media/gallina.png', { frameWidth: 46, frameHeight: 90 });
         }
     
         create() {
@@ -358,14 +358,25 @@ function ejecutarLvl1(){
             cursors = this.input.keyboard.createCursorKeys();
             
             // Gallinas
+            this.anims.create({
+                key: 'walkGallina',
+                frames: this.anims.generateFrameNumbers('gallinita', { start: 0, end: 3 }),
+                frameRate: 10,
+                repeat: -1
+            });
+    
+            // NUEVO: Usar 'gallinita' en vez de 'gallina' si tienes animación
             gallinas = this.physics.add.group({
-                key: 'gallina',
+                key: 'gallinita', // ← usa gallinita si tiene spritesheet
                 repeat: 11,
                 setXY: { x: 12, y: 0, stepX: 70 }
             });
-        
+
             gallinas.children.iterate(child => {
-                child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+                child.setBounce(1);
+                child.setCollideWorldBounds(true);
+                child.setVelocityX(Phaser.Math.Between(-100, 100)); // Movimiento horizontal
+                child.anims.play('walkGallina', true); // animación caminando
             });
         
             // Bombas
@@ -418,6 +429,14 @@ function ejecutarLvl1(){
                 if (cursors.up.isDown && player.body.touching.down) {
                     player.setVelocityY(-330);
                 }
+
+                gallinas.children.iterate(child => {
+                    if (child.body.velocity.x > 0) {
+                        child.setFlipX(false);
+                    } else {
+                        child.setFlipX(true);
+                    }
+                });
             }
         }    
     
@@ -449,6 +468,61 @@ function ejecutarLvl1(){
         }
     } //lvl2
 
+    class PantallaUsuario extends Phaser.Scene {
+        constructor() {
+            super({ key: 'PantallaUsuario' });
+        }
+    
+        preload() {
+            this.load.image('bg', 'media/mainBG.png');
+            this.load.image('ingresaNombre', 'media/inputname.png');
+            this.load.image('start', 'media/playBtn.png');
+    
+        }
+    
+        create() {
+      
+            this.add.image(400, 300, 'bg').setOrigin(0.5, 0.5).setDisplaySize(800, 600);
+            this.add.image(400, 100, 'ingresaNombre').setOrigin(0.5).setScale(0.8);
+    
+            //pa poner el nombre
+            let nombreJugador = "";
+            let nombreTexto = this.add.text(400, 180, "Tu nombre...", {
+                fontSize: "28px",
+                fill: "#fff",
+                backgroundColor: "#333",
+                padding: { x: 10, y: 5 },
+            })
+                .setOrigin(0.5)
+                .setInteractive();
+    
+            // Capturar teclado
+            this.input.keyboard.on('keydown', (event) => {
+                if (event.key === "Backspace") {
+                    nombreJugador = nombreJugador.slice(0, -1);
+                } else if (event.key.length === 1) {
+                    nombreJugador += event.key;
+                }
+                nombreTexto.setText(nombreJugador || "Tu nombre...");
+            });
+    
+            // Botón
+            let playButton = this.add.image(400, 300, 'start').setOrigin(0.5).setScale(0.8).setInteractive();
+            playButton.on('pointerover', () => playButton.setScale(0.9));
+            playButton.on('pointerout', () => playButton.setScale(0.8));
+    
+            playButton.on('pointerdown', () => {
+                if (nombreJugador.trim() !== "") {
+                    localStorage.setItem("usuario", nombreJugador.trim());
+                    this.scene.start('Lvl1');
+                } else {
+                    alert("Por favor, ingresa un nombre.");
+                }
+            });
+    
+        }
+    } //pantallaUsuario
+
     var game; //global
 
     var config = {
@@ -462,7 +536,7 @@ function ejecutarLvl1(){
                 debug: false
             }
         },
-        scene: [Lvl1, Lvl2]
+        scene: [PantallaUsuario, Lvl1, Lvl2]
     };
 
     game = new Phaser.Game(config);
