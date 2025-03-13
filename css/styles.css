@@ -126,9 +126,14 @@ body {
     transition: transform 0.3s ease;
 }
 
-#avatar1:hover,
-#avatar2:hover {
+#avatar1:hover:not(.avatar-fixed),
+#avatar2:hover:not(.avatar-fixed) {
     transform: scale(1.1);
+}
+
+.avatar-fixed:hover {
+    transform: none !important;
+    cursor: default;
 }
 
 #dropzone{

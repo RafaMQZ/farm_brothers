@@ -79,13 +79,25 @@ function drag(ev) {
 
 function drop(ev) {
     ev.preventDefault();
+
+    if (selectedAvatar!=null) {
+        //si ya hay algo en el dropzone
+        Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "Ya elegiste un avatar"
+        });
+        return;
+    }
+
     var data = ev.dataTransfer.getData("text");
     var draggedElement = document.getElementById(data); // Obtiene el avatar arrastrado
+    draggedElement.classList.add("avatar-fixed");
     ev.target.appendChild(draggedElement); // Mueve el avatar al dropzone
 
-    // Aquí verificamos qué avatar está dentro del dropzone
+    // Verificamos qué avatar está dentro del dropzone
     if (ev.target.id === "dropzone") {
-        selectedAvatar = ev.target.querySelector('img').id; // Obtiene el avatar dentro del dropzone
+        selectedAvatar = ev.target.querySelector('img').id;
     }
 }
 
@@ -100,23 +112,13 @@ document.getElementById("dropzone").addEventListener("drop", drop);
 function selectAvatar(){
     if(selectedAvatar){
         if(selectedAvatar === "avatar1"){
-            Swal.fire({
-                icon: "success",
-                title: "Avatar elegido!",
-                text: "Puedes continuar"
-            });
             document.getElementById('pantallaAvatar').style.display = 'none';
             
         } else if (selectedAvatar === "avatar2"){
-            Swal.fire({
-                icon: "success",
-                title: "Avatar elegido!",
-                text: "Puedes continuar"
-            });
             document.getElementById('pantallaAvatar').style.display = 'none';
         }
         
-        ejecutarLvl1();
+        ejecutarJuego();
     }
     else {
         Swal.fire({
@@ -131,6 +133,7 @@ function selectAvatar(){
 
 // Función para resetear la pantalla si no eligio el avatar
 function resetAvatarSelection() {
+    selectedAvatar=null;
     // Vuelve a poner los avatares disponibles
     var avatar1 = document.getElementById("avatar1");
     var avatar2 = document.getElementById("avatar2");
@@ -138,15 +141,14 @@ function resetAvatarSelection() {
     // Añade los avatares nuevamente al contenedor
     document.getElementById("avatares").appendChild(avatar1);
     document.getElementById("avatares").appendChild(avatar2);
-    
-    selectedAvatar="";
 }
 
-function ejecutarLvl1(){
+function ejecutarJuego(){
     var player;
     var pacas;
     var gallinas;
     var bombs;
+    var coyote;
     var platforms;
     var cursors;
     var score = 0;
@@ -169,6 +171,9 @@ function ejecutarLvl1(){
         }
     
         create() {
+            this.scene.stop('Lvl1');
+            this.scene.start('Lvl2');
+
             // Fondo
             this.add.image(400, 300, 'sky1');
     
@@ -241,7 +246,7 @@ function ejecutarLvl1(){
             // Pacas
             pacas = this.physics.add.group({
                 key: 'paca',
-                repeat: 11,
+                repeat: 11, //12 en total
                 setXY: { x: 12, y: 0, stepX: 70 }
             });
     
@@ -256,7 +261,7 @@ function ejecutarLvl1(){
             this.physics.add.collider(player, platforms);
             this.physics.add.collider(pacas, platforms);
             this.physics.add.collider(bombs, platforms);
-            this.physics.add.overlap(player, pacas, this.collectStar, null, this);
+            this.physics.add.overlap(player, pacas, this.colectarPacas, null, this);
             this.physics.add.collider(player, bombs, this.hitBomb, null, this);
         }
     
@@ -279,7 +284,7 @@ function ejecutarLvl1(){
             }
         }
     
-        collectStar(player, paca) {
+        colectarPacas(player, paca) {
             paca.disableBody(true, true);
     
             score += 10;
@@ -308,7 +313,7 @@ function ejecutarLvl1(){
             gameOver = true;
         }
     } //lvl1
-
+    
     class Lvl2 extends Phaser.Scene {
         constructor() {
             super({ key: 'Lvl2' });
@@ -319,17 +324,17 @@ function ejecutarLvl1(){
             this.load.image('ground2', 'media/plataforma2.png');
             this.load.image('floor2', 'media/floor2.png');
             this.load.image('gallina', 'media/paca.png');
-            this.load.image('bomb', 'media/bomb.png');
             this.load.image('text', 'media/gameOver_txt.png'); //pantalla de game over
             this.load.spritesheet('dude1', 'media/player1.png', { frameWidth: 46, frameHeight: 90 });
             this.load.spritesheet('dude2', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
-            this.load.spritesheet('gallinita', 'media/gallina.png', { frameWidth: 46, frameHeight: 90 });
+            this.load.spritesheet('gallinita', 'media/gallina.png', { frameWidth: 40, frameHeight: 46 });
+            this.load.spritesheet('coyote', 'media/coyote.png', { frameWidth: 95, frameHeight: 60 });
         }
     
         create() {
             gameOver = false; // Reinicia el estado del juego
             score = 0; // Reinicia el puntaje
-        
+
             // Fondo
             this.add.image(400, 300, 'sky2');
         
@@ -344,15 +349,14 @@ function ejecutarLvl1(){
             platforms.create(750, 260, 'ground2');
         
             if(selectedAvatar==="avatar1"){
-                player = this.physics.add.sprite(100, 420, 'dude1');
-                player.setBounce(0.2);
-                player.setCollideWorldBounds(true);
+                player = this.physics.add.sprite(200, 420, 'dude1');
 
             } else if(selectedAvatar==="avatar2"){
-                player = this.physics.add.sprite(100, 420, 'dude2');
-                player.setBounce(0.2);
-                player.setCollideWorldBounds(true);
+                player = this.physics.add.sprite(200, 420, 'dude2');
             }
+
+            player.setBounce(0.2);
+            player.setCollideWorldBounds(true);
             
             // Controles
             cursors = this.input.keyboard.createCursorKeys();
@@ -365,39 +369,58 @@ function ejecutarLvl1(){
                 repeat: -1
             });
     
-            // NUEVO: Usar 'gallinita' en vez de 'gallina' si tienes animación
             gallinas = this.physics.add.group({
-                key: 'gallinita', // ← usa gallinita si tiene spritesheet
-                repeat: 11,
-                setXY: { x: 12, y: 0, stepX: 70 }
+                key: 'gallinita',
+                repeat: 9,
             });
 
+            let xG=12; //posicion para la 1era gallina
             gallinas.children.iterate(child => {
-                child.setBounce(1);
+                let separacion = Phaser.Math.Between(70, 100); //espacio random entre gallinas
+                child.setX(xG);
+                child.setY(0);
+                xG+=separacion;
+
+                child.setBounce(0.9);
                 child.setCollideWorldBounds(true);
-                child.setVelocityX(Phaser.Math.Between(-100, 100)); // Movimiento horizontal
-                child.anims.play('walkGallina', true); // animación caminando
+                child.setVelocityX(Phaser.Math.Between(100, 250));
+                child.anims.play('walkGallina', true);
             });
+
+            //para movimiento del coyote
+            this.playerMovements = []; // Guarda los movimientos del jugador
+            this.movementDelay = 3000; // 3 segundos en milisegundos
+            this.lastMoveTime = 0;
         
-            // Bombas
-            bombs = this.physics.add.group();
-        
+            // coyote
+            this.anims.create({
+                key: 'walkCoyote',
+                frames: this.anims.generateFrameNumbers('coyote', { start: 0, end: 3 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            coyote=this.physics.add.sprite(50, 420, 'coyote');
+            coyote.setBounce(0.2);
+            coyote.setCollideWorldBounds(true);
+            coyote.anims.play('walkCoyote');
+
             // Colisiones
             this.physics.add.collider(player, platforms);
             this.physics.add.collider(gallinas, platforms);
-            this.physics.add.collider(bombs, platforms);
-            this.physics.add.overlap(player, gallinas, this.collectStar, null, this);
-            this.physics.add.collider(player, bombs, this.hitBomb, null, this);
+            this.physics.add.collider(coyote, platforms);
+            this.physics.add.overlap(player, gallinas, this.colectarGallinas, null, this);
+            this.physics.add.collider(player, coyote, this.hitBomb, null, this);
         }
         
         update() {
             if (gameOver && !this.hasHandledGameOver) {
                 this.hasHandledGameOver = true; // para que no se llame muchas veces
-        
+                
+                //Game over
                 let overlay = this.add.graphics().setDepth(10);
                 overlay.fillStyle(0x000000, 0.5); // Color negro con opacidad
                 overlay.fillRect(0, 0, this.cameras.main.width, this.cameras.main.height);
-    
                 // texto de game over
                 let txt = this.add.image(400, 300, 'text').setDepth(11);
     
@@ -437,91 +460,77 @@ function ejecutarLvl1(){
                         child.setFlipX(true);
                     }
                 });
+
+                let movement = {
+                    x: player.x,
+                    y: player.y,
+                    velocityX: player.body.velocity.x,
+                    velocityY: player.body.velocity.y,
+                    timestamp: this.time.now
+                };
+                this.playerMovements.push(movement);
+
+                // Eliminar movimientos antiguos para evitar que crezca infinito
+                while (this.playerMovements.length > 0 && this.time.now - this.playerMovements[0].timestamp > this.movementDelay + 1000) {
+                    this.playerMovements.shift();
+                }
+
+                // Coyote sigue con 3 segundos de retraso
+                let delayedMovement = this.playerMovements.find(m => this.time.now - m.timestamp >= this.movementDelay);
+                if (delayedMovement) {
+                    coyote.setVelocityX(delayedMovement.velocityX);
+                    if (coyote.body.touching.down && delayedMovement.velocityY < -200) {
+                        // Simula un salto solo si el jugador había saltado
+                        coyote.setVelocityY(-330);
+                    }
+                }
+
+                if (delayedMovement) {
+                    if (delayedMovement.velocityX < 0) {
+                        coyote.anims.play('walkCoyote', true);
+                        coyote.setFlipX(true);
+                    } else if (delayedMovement.velocityX > 0) {
+                        coyote.anims.play('walkCoyote', true);
+                        coyote.setFlipX(false);
+                    } else {
+                        coyote.anims.stop();
+                    }
+                }
             }
         }    
     
-        collectStar(player, gallina) {
+        colectarGallinas(player, gallina) {
             gallina.disableBody(true, true);
     
             score += 10;
             scoreText.setText('Score: ' + score);
     
             if (gallinas.countActive(true) === 0) {
+                let xG=12;
+
                 gallinas.children.iterate(child => {
-                    child.enableBody(true, child.x, 0, true, true);
+                    let separacion = Phaser.Math.Between(70, 100);
+                    child.enableBody(true, xG, 0, true, true);
+
+                    let velocidadX = Phaser.Math.Between(100, 500);
+                    if (Phaser.Math.Between(0, 1) === 0) velocidadX *= -1;
+                    child.setVelocityX(velocidadX);
+
+                    // Reproducir animación
+                    child.anims.play('walkGallina', true);
+
+                    xG+=separacion;
                 });
-    
-                var x = player.x < 400 ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-                var bomb = bombs.create(x, 16, 'bomb');
-                bomb.setBounce(1);
-                bomb.setCollideWorldBounds(true);
-                bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-                bomb.allowGravity = false;
             }
         }
     
-        hitBomb(player, bomb) {
+        hitBomb(player, obj) {
             this.physics.pause();
             player.setTint(0xff0000);
             player.anims.play('turn');
             gameOver = true;
         }
     } //lvl2
-
-    class PantallaUsuario extends Phaser.Scene {
-        constructor() {
-            super({ key: 'PantallaUsuario' });
-        }
-    
-        preload() {
-            this.load.image('bg', 'media/mainBG.png');
-            this.load.image('ingresaNombre', 'media/inputname.png');
-            this.load.image('start', 'media/playBtn.png');
-    
-        }
-    
-        create() {
-      
-            this.add.image(400, 300, 'bg').setOrigin(0.5, 0.5).setDisplaySize(800, 600);
-            this.add.image(400, 100, 'ingresaNombre').setOrigin(0.5).setScale(0.8);
-    
-            //pa poner el nombre
-            let nombreJugador = "";
-            let nombreTexto = this.add.text(400, 180, "Tu nombre...", {
-                fontSize: "28px",
-                fill: "#fff",
-                backgroundColor: "#333",
-                padding: { x: 10, y: 5 },
-            })
-                .setOrigin(0.5)
-                .setInteractive();
-    
-            // Capturar teclado
-            this.input.keyboard.on('keydown', (event) => {
-                if (event.key === "Backspace") {
-                    nombreJugador = nombreJugador.slice(0, -1);
-                } else if (event.key.length === 1) {
-                    nombreJugador += event.key;
-                }
-                nombreTexto.setText(nombreJugador || "Tu nombre...");
-            });
-    
-            // Botón
-            let playButton = this.add.image(400, 300, 'start').setOrigin(0.5).setScale(0.8).setInteractive();
-            playButton.on('pointerover', () => playButton.setScale(0.9));
-            playButton.on('pointerout', () => playButton.setScale(0.8));
-    
-            playButton.on('pointerdown', () => {
-                if (nombreJugador.trim() !== "") {
-                    localStorage.setItem("usuario", nombreJugador.trim());
-                    this.scene.start('Lvl1');
-                } else {
-                    alert("Por favor, ingresa un nombre.");
-                }
-            });
-    
-        }
-    } //pantallaUsuario
 
     var game; //global
 
@@ -536,7 +545,7 @@ function ejecutarLvl1(){
                 debug: false
             }
         },
-        scene: [PantallaUsuario, Lvl1, Lvl2]
+        scene: [Lvl1, Lvl2]
     };
 
     game = new Phaser.Game(config);
