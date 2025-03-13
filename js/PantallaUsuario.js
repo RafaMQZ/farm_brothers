@@ -5,6 +5,8 @@ class PantallaUsuario extends Phaser.Scene {
 
     preload() {
         this.load.image('bg', 'media/mainBG.png');
+        this.load.image('ingresaNombre', 'media/inputname.png'); 
+        this.load.image('start', 'media/playBtn.png'); 
     }
 
     create() {
@@ -14,7 +16,7 @@ class PantallaUsuario extends Phaser.Scene {
         this.add.image(400, 300, 'bg').setOrigin(0.5, 0.5).setDisplaySize(800, 600);
 
         // Texto "Ingresa tu nombre" (más arriba)
-        this.add.text(250, 100, "Ingresa tu nombre:", { fontSize: "32px", fill: "#fff" });
+        this.add.image(400, 100, 'ingresaNombre').setOrigin(0.5).setScale(0.8);
 
         // Texto interactivo como "input" (más arriba)
         let nombreJugador = "";
@@ -37,16 +39,16 @@ class PantallaUsuario extends Phaser.Scene {
             nombreTexto.setText(nombreJugador || "Tu nombre...");
         });
 
-        // Botón "Jugar" (más arriba también)
-        let playButton = this.add.text(400, 250, "Jugar", {
-            fontSize: "28px",
-            fill: "#fff",
-            backgroundColor: "#4caf50",
-            padding: { x: 10, y: 5 },
-        })
-        .setOrigin(0.5)
-        .setInteractive();
+        let playButton = this.add.image(400, 300, 'playButton').setOrigin(0.5).setScale(0.8).setInteractive();
 
+        // Efecto al pasar el mouse
+        playButton.on('pointerover', () => {
+            playButton.setScale(0.9);
+        });
+
+        playButton.on('pointerout', () => {
+            playButton.setScale(0.8);
+        });
         // Evento del botón
         playButton.on('pointerdown', () => {
             if (nombreJugador.trim() !== "") {
