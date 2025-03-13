@@ -8,7 +8,7 @@ class PantallaUsuario extends Phaser.Scene {
         this.load.image('ingresaNombre', 'media/inputname.png');
         this.load.image('start', 'media/playBtn.png');
 
-    }
+    }//prueba
 
     create() {
   
