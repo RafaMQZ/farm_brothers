@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>Tabla Pixel Art</title>
+</head>
+
+<body>
+
+    <h1>SCORES</h1>
+
+    <table class="score">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Puntuación</th>
+            </tr>
+        </thead>
+        <tbody id="scoreTableBody">
+            <!--pa meter los datos con el js-->
+        </tbody>
+    </table>
+
+    <script>
+        const scoreTableBody = document.getElementById("scoreTableBody");
+
+        // Extraer los datos de localStorage
+        const usuario = localStorage.getItem("usuario");
+        const puntaje = localStorage.getItem("puntaje");
+
+        // actualiza la tabla cuando hay datos
+        if (usuario && puntaje) {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${usuario}</td>
+                <td>${puntaje}</td>
+            `;
+            scoreTableBody.appendChild(row);
+        } else {
+            scoreTableBody.innerHTML = "<tr><td colspan='2'>No hay datos guardados.</td></tr>";
+        }
+    </script>
+
+</body>
+</html>
