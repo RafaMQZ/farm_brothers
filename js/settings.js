@@ -328,13 +328,12 @@ function ejecutarLvl1(){
     
         create() {
             gameOver = false; // Reinicia el estado del juego
-            score = 0; // Reinicia el puntaje
         
             // Fondo
             this.add.image(400, 300, 'sky2');
         
             // Puntaje
-            scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+            scoreText = this.add.text(16, 16, 'Score: '+ score, { fontSize: '32px', fill: '#000' });
         
             // Plataformas
             platforms = this.physics.add.staticGroup();

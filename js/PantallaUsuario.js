@@ -8,7 +8,7 @@ class PantallaUsuario extends Phaser.Scene {
         this.load.image('ingresaNombre', 'media/inputname.png');
         this.load.image('start', 'media/playBtn.png');
 
-    }//prueba
+    }
 
     create() {
   
@@ -46,7 +46,7 @@ class PantallaUsuario extends Phaser.Scene {
                 localStorage.setItem("usuario", nombreJugador.trim());
                 this.scene.start('Lvl1');
             } else {
-                alert("Por favor, ingresa un nombre.");
+                alert("ingresa un nombre.");
             }
         });
 
