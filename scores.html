@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>Tabla Pixel Art</title>
+</head>
+
+<body>
+
+    <h1>SCORES</h1>
+
+    <table class="score">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Puntuación</th>
+            </tr>
+        </thead>
+        <tbody id="scoreTableBody">
+            <!--pa meter los datos con el js-->
+        </tbody>
+    </table>
+
+    <script>
+        const scoreTableBody = document.getElementById("scoreTableBody");
+        let jugadores = JSON.parse(localStorage.getItem("jugadores")) || [];
+
+        // Ordenamos de mayor a menor puntaje
+        jugadores.sort((a, b) => b.puntos - a.puntos);
+
+        scoreTableBody.innerHTML = ""; // Limpiamos la tabla antes de llenarla
+
+        // Llenamos la tabla con los datos
+        jugadores.forEach((jugador, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${jugador.nombre}</td>
+                <td>${jugador.puntos}</td>
+            `;
+            scoreTableBody.appendChild(row);
+        });
+    </script>
+
+</body>
+</html>

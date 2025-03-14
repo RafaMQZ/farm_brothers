@@ -1,4 +1,11 @@
 var selectedAvatar;
+let nombre;
+let scores = [{ usuario: "", score: 0 }];
+localStorage.setItem('scores', JSON.stringify(scores));
+let img3Vidas;
+let img2Vidas;
+let img1Vidas;
+
 
 /* Para uso de canvas ---------------------------------------------------------------------- */
 let canvas = document.getElementById("pantallaInicio");
@@ -48,22 +55,14 @@ logo.onload = function() {
 function pantalla_Avatar(){
     // Ocultar la pantalla inicial
     document.getElementById('mainPantalla').style.display = 'none';
+
+
     // Mostrar la pantalla de selección de avatar
     document.getElementById('pantallaAvatar').style.display = 'grid';
 }
-
-function pantalla_Instrucciones(){
-    // Ocultar la pantalla inicial
+function pantalla_scores(){
     document.getElementById('mainPantalla').style.display = 'none';
-    // Mostrar la pantalla de instrucciones
-    document.getElementById('pantallaInstrucciones').style.display = 'flex';
-}
-
-function pantalla_Creditos(){
-    // Ocultar la pantalla inicial
-    document.getElementById('mainPantalla').style.display = 'none';
-    // Mostrar la pantalla de instrucciones
-    document.getElementById('pantallaCreditos').style.display = 'flex';
+    document.getElementById('pantallaScores').style.display = 'flex';
 }
 
 //si regresa de avatar a pantalla de inicio
@@ -80,17 +79,13 @@ function backMain1(){
         dropzone.innerHTML = ""; 
     }
 }
-
-//si regresa de instrucciones a pantalla de inicio
-function backMain2(){
-    document.getElementById('pantallaInstrucciones').style.display = 'none';
+function backMainScore(){
+    document.getElementById('pantallaScores').style.display = 'none';
     document.getElementById('mainPantalla').style.display = 'block';
 }
-
-//si regresa de creditos a pantalla de inicio
-function backMain3(){
-    document.getElementById('pantallaCreditos').style.display = 'none';
-    document.getElementById('mainPantalla').style.display = 'block';
+function backToPantalla_Avatar(){
+    document.getElementById('pantallaUsuario').style.display = 'none';
+    document.getElementById('pantallaAvatar').style.display = 'grid';
 }
 
 /* Para drag and drop ---------------------------------------------------------------------- */
@@ -137,13 +132,15 @@ document.getElementById("dropzone").addEventListener("drop", drop);
 function selectAvatar(){
     if(selectedAvatar){
         if(selectedAvatar === "avatar1"){
+
             document.getElementById('pantallaAvatar').style.display = 'none';
             
         } else if (selectedAvatar === "avatar2"){
             document.getElementById('pantallaAvatar').style.display = 'none';
         }
-        
-        ejecutarJuego();
+
+        document.getElementById('pantallaAvatar').style.display = 'none';
+        document.getElementById('pantallaUsuario').style.display = 'block';
     }
     else {
         Swal.fire({
@@ -181,6 +178,7 @@ function ejecutarJuego(){
     var score = 0;
     var gameOver = false;
     var scoreText;
+    var vidas=3;
     
     class Lvl1 extends Phaser.Scene {
         constructor() {
@@ -193,6 +191,9 @@ function ejecutarJuego(){
             this.load.image('floor1', 'media/floor1.png');
             this.load.image('paca', 'media/paca.png');
             this.load.image('bomb', 'media/bomb.png');
+            this.load.image('3vidas', 'media/bomb.png');
+            this.load.image('2vidas', 'media/bomb.png');
+            this.load.image('1vidas', 'media/bomb.png');
             this.load.spritesheet('dude1', 'media/player1.png', { frameWidth: 46, frameHeight: 90 });
             this.load.spritesheet('dude2', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
         }
@@ -290,9 +291,11 @@ function ejecutarJuego(){
             this.physics.add.collider(bombs, platforms);
             this.physics.add.overlap(player, pacas, this.colectarPacas, null, this);
             this.physics.add.collider(player, bombs, this.hitBomb, null, this);
+
         }
     
         update() {
+
             if (gameOver) return;
     
             if (cursors.left.isDown) {
@@ -337,11 +340,15 @@ function ejecutarJuego(){
             this.physics.pause();
             player.setTint(0xff0000);
             player.anims.play('turn');
-            gameOver = true;
+            gameOver = true;//eliminar cuando haya vidas
+            localStorage.setItem("puntaje", score);
+            vidas-=1;
+            if(vidas===0)gameOver = true;
         }
     } //lvl1
     
     class Lvl2 extends Phaser.Scene {
+        
         constructor() {
             super({ key: 'Lvl2' });
         }
@@ -352,6 +359,8 @@ function ejecutarJuego(){
             this.load.image('miniGround', 'media/plataformaMini.png')
             this.load.image('floor2', 'media/floor2.png');
             this.load.image('gallina', 'media/paca.png');
+            this.load.image('bomb', 'media/bomb.png');
+            this.load.image('vida', 'media/paca.png');
             this.load.image('text', 'media/gameOver_txt.png'); //pantalla de game over
             this.load.image('btnVolver', 'media/backGmOv.png');
             this.load.spritesheet('dude1', 'media/player1.png', { frameWidth: 46, frameHeight: 90 });
@@ -362,21 +371,23 @@ function ejecutarJuego(){
     
         create() {
             gameOver = false; // Reinicia el estado del juego
-            score = 0; // Reinicia el puntaje
-
+            var vidas=3;
+        
             // Fondo
             this.add.image(400, 300, 'sky2');
         
             // Puntaje
-            scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+            scoreText = this.add.text(16, 16, 'Score: '+ score, { fontSize: '32px', fill: '#000' });
         
             // Plataformas
             platforms = this.physics.add.staticGroup();
             platforms.create(400, 600, 'floor2');
-            platforms.create(400, 430, 'miniGround');
-            platforms.create(440, 180, 'miniGround');
-            platforms.create(20, 310, 'ground2');
-            platforms.create(820, 280, 'ground2');
+            platforms.create(610, 430, 'ground2');
+            platforms.create(50, 280, 'ground2');
+            platforms.create(750, 260, 'ground2');
+            img3Vidas=this.add.image(380,10,'vida');
+            img2Vidas=this.add.image(340,10,'vida');
+            img1Vidas=this.add.image(300,10,'vida');
         
             if(selectedAvatar==="avatar1"){
                 player = this.physics.add.sprite(200, 420, 'dude1');
@@ -399,6 +410,7 @@ function ejecutarJuego(){
                 repeat: -1
             });
     
+ 
             gallinas = this.physics.add.group({
                 key: 'gallinita',
                 repeat: 9,
@@ -552,9 +564,18 @@ function ejecutarJuego(){
         },
         scene: [Lvl1, Lvl2]
     };
+    function guardarScore(){
+        let jugadores = JSON.parse(localStorage.getItem("jugadores")) || [];
+        console.log(nombre,"-",score);
+
+        // Agregamos el nuevo jugador a la lista
+        jugadores.push({ usuario: nombre, score: score });
+
+        // Guardamos la lista actualizada en el localStorage
+        localStorage.setItem("jugadores", JSON.stringify(jugadores));
+    }
 
     game = new Phaser.Game(config);
-
     function GameOver(scene){
         let overlay = scene.add.graphics().setDepth(10);
         overlay.fillStyle(0x000000, 0.5); // Color negro con opacidad
@@ -588,3 +609,38 @@ function ejecutarJuego(){
         });
     }
 }
+
+function validarName() {
+    nombre = document.getElementById("nombre").value;
+    let regex = /^[a-zA-Z0-9_]{4,8}$/;
+
+    if (regex.test(nombre)) {
+        let scores = JSON.parse(localStorage.getItem('scores')) || [];
+
+        // Verifica si el nombre ya existe en la lista
+        let nombreExistente = scores.some(item => item.usuario === nombre);
+
+        if (!nombreExistente) {
+            Swal.fire({
+                icon: "success",
+                title: "nombre registrado",
+                text: "continuar al juego"
+            });
+            document.getElementById('pantallaUsuario').style.display = 'none';
+            ejecutarLvl1();
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "El nombre ya existe. Por favor, elige otro."
+            });
+        }
+    } else {
+        Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "El nombre debe tener entre 4 y 8 caracteres, solo letras, números o guiones bajos (_)."
+        });
+    }
+}
+
