@@ -19,9 +19,9 @@
             
             <div class="btns-main">
                 <button id="PlayBtn" onclick="pantalla_Avatar()"><img src="media/playBtn.png"></button>
-                <button id="InstrBtn"><img src="media/instructionsBtn.png"></button>
+                <button id="InstrBtn" onclick="pantalla_Instrucciones()"><img src="media/instructionsBtn.png"></button>
                 <button id="ScoresBtn"><img src="media/scoresBtn.png"></button>
-                <button id="CreditsBtn"><img src="media/creditsBtn.png"></button>
+                <button id="CreditsBtn" onclick="pantalla_Creditos()"><img src="media/creditsBtn.png"></button>
             </div>
         </div>
     </section>
@@ -33,7 +33,7 @@
 
     <!--Pantalla para el uso de drag and drop--> 
     <section id="pantallaAvatar" style="display: none;">
-        <div class="instrucciones">
+        <div class="txt-format --Ainstrucciones">
             <h1>ELIGE A TU PERSONAJE</h1>
             <p>ARRASTRALO A LA CASILLA</p>
         </div>
@@ -49,15 +49,91 @@
         </div>
 
         <div id="dropzone"></div>
+        
+        <div class="btns-avatar">
+            <button id="regresarInicio" onclick="backMain1()">
+                <img src="media/backBtn.png">
+            </button>
 
-        <button id="selectAvtr" onclick="selectAvatar()">
-            <img src="media/nextBtn.png">
-        </button>
-
-        <button id="regresarInicio" onclick="backMain1()">
-            <img src="media/backBtn.png">
-        </button>
+            <button id="selectAvtr" onclick="selectAvatar()">
+                <img src="media/nextBtn.png">
+            </button>
+        </div>
     </section>
+
+    <!--Pantalla de instrucciones-->
+    <section id="pantallaInstrucciones" style="display: none;">
+        <div class="txt-format">
+            <h1>¡BIENVENIDO!</h1>
+            <p>
+                EN FARM BROTHERS ERES UN GRANJERO QUE DEBE CUIDAR DE SU RANCHITO 
+                Y SUPERAR LOS OBSTACULOS EN CADA NIVEL, SOLO TIENES 3 OPORTUNIDADES.
+            </p>
+            <p>INSTRUCCIONES PARA JUGAR:</p>
+        </div>
+
+        <div class="contenido-Instrucciones txt-format">
+            <div class="conteinerI">
+                <h2>NIVEL #1</h2>
+                <p>
+                    EN ESTE PRIMER NIVEL, DEBES RECOJER LAS PACAS QUE SE ENCUENTRAN
+                    EN LAS PLATAFORMAS, PERO CUIDADO CON LAS BOMBAS, ¡RECUERDA QUE SOLO TIENES 3 VIDAS!
+                </p>
+            </div>
+
+            <div class="conteinerI">
+                <h2>NIVEL #2</h2>
+                <p>
+                    AHORA, DEBERAS PERSEGUIR A TUS GALLINAS, Y ESCAPAR DE TU PEOR ENEMIGO,
+                    EL COYOTE QUE QUIERE CAZARLAS, Y ADEMAS, PUEDE HACERTE DAÑO.
+                    PIENSA BIEN TUS MOVIMIENTOS, PUES TE SIGUE, Y ADEMAS ES MAS RAPIDO QUE TU.
+                    TIENES UNOS SEGUNDOS DE VENTAJA ANTES DE QUE COMIENCE A SEGUIRTE, DATE PRISA.
+    
+                    EN ESTE NIVEL, PUEDES OBTENER AYUDA EXTRA DE UN RECURSO ESPECIAL,
+                    SI PONES ATENCION, VERAS UNA JAULA, QUE VA A CAPTURAR AL COYOTE,
+                    Y HARA MAS FACIL EL TRABAJO DE REUNIR A TUS GALLINAS.
+                </p>
+            </div>
+        </div>
+
+        <div class="txt-format">
+            <h2>¡AHORA ESTAS LISTO, CUIDA BIEN DE TU RANCHO!</h2>
+        </div>
+
+        <div class="btns-instrucciones">
+            <button id="regresarInicio" onclick="backMain2()">
+                <img src="media/backBtn.png">
+            </button>
+        </div>
+    </section>
+
+    <!--Pantalla de creditos-->
+    <section id="pantallaCreditos" style="display: none;">
+        <div class="infoContainer">
+            <div class="txt-format">
+                <h2>RAFAEL MARQUEZ MACIAS</h2>
+                <h2>CAMILA JAASIEL MENDOZA MARTINEZ</h2>            
+            </div>
+    
+            <div class="rafa_cami">
+                <img src="media/rafa_cami.jpg">
+            </div>
+    
+            <div class="txt-format">
+                <h2>MATERIA: TECNOLOGIAS WEB</h2>
+                <h2>FECHA: 14/03/24</h2>            
+            </div>
+        </div>
+
+        <div class="btns-creditos">
+            <button id="regresarInicio" onclick="backMain3()">
+                <img src="media/backBtn.png">
+            </button>
+        </div>
+    </section>
+
+    <!--Game container-->
+    <section id="gameContainer" style="display: none;"></section>
 
     <script src="js/settings.js"></script>
     <!--Para BootStrap-->

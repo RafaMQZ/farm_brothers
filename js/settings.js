@@ -44,13 +44,26 @@ logo.onload = function() {
     animate();  // Iniciar la animación
 }
 
-//mostar la siguiente pantalla
+//mostar las siguientes pantallas
 function pantalla_Avatar(){
     // Ocultar la pantalla inicial
     document.getElementById('mainPantalla').style.display = 'none';
-
     // Mostrar la pantalla de selección de avatar
     document.getElementById('pantallaAvatar').style.display = 'grid';
+}
+
+function pantalla_Instrucciones(){
+    // Ocultar la pantalla inicial
+    document.getElementById('mainPantalla').style.display = 'none';
+    // Mostrar la pantalla de instrucciones
+    document.getElementById('pantallaInstrucciones').style.display = 'flex';
+}
+
+function pantalla_Creditos(){
+    // Ocultar la pantalla inicial
+    document.getElementById('mainPantalla').style.display = 'none';
+    // Mostrar la pantalla de instrucciones
+    document.getElementById('pantallaCreditos').style.display = 'flex';
 }
 
 //si regresa de avatar a pantalla de inicio
@@ -66,6 +79,18 @@ function backMain1(){
         var dropzone = document.getElementById("dropzone");
         dropzone.innerHTML = ""; 
     }
+}
+
+//si regresa de instrucciones a pantalla de inicio
+function backMain2(){
+    document.getElementById('pantallaInstrucciones').style.display = 'none';
+    document.getElementById('mainPantalla').style.display = 'block';
+}
+
+//si regresa de creditos a pantalla de inicio
+function backMain3(){
+    document.getElementById('pantallaCreditos').style.display = 'none';
+    document.getElementById('mainPantalla').style.display = 'block';
 }
 
 /* Para drag and drop ---------------------------------------------------------------------- */
@@ -144,6 +169,8 @@ function resetAvatarSelection() {
 }
 
 function ejecutarJuego(){
+    document.getElementById('gameContainer').style.display = 'block';
+
     var player;
     var pacas;
     var gallinas;
@@ -306,7 +333,7 @@ function ejecutarJuego(){
             }
         }
     
-        hitBomb(player, bomb) {
+        hitBomb(player) {
             this.physics.pause();
             player.setTint(0xff0000);
             player.anims.play('turn');
@@ -322,9 +349,11 @@ function ejecutarJuego(){
         preload() {
             this.load.image('sky2', 'media/bg2.png');
             this.load.image('ground2', 'media/plataforma2.png');
+            this.load.image('miniGround', 'media/plataformaMini.png')
             this.load.image('floor2', 'media/floor2.png');
             this.load.image('gallina', 'media/paca.png');
             this.load.image('text', 'media/gameOver_txt.png'); //pantalla de game over
+            this.load.image('btnVolver', 'media/backGmOv.png');
             this.load.spritesheet('dude1', 'media/player1.png', { frameWidth: 46, frameHeight: 90 });
             this.load.spritesheet('dude2', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
             this.load.spritesheet('gallinita', 'media/gallina.png', { frameWidth: 40, frameHeight: 46 });
@@ -344,9 +373,10 @@ function ejecutarJuego(){
             // Plataformas
             platforms = this.physics.add.staticGroup();
             platforms.create(400, 600, 'floor2');
-            platforms.create(610, 430, 'ground2');
-            platforms.create(50, 280, 'ground2');
-            platforms.create(750, 260, 'ground2');
+            platforms.create(400, 430, 'miniGround');
+            platforms.create(440, 180, 'miniGround');
+            platforms.create(20, 310, 'ground2');
+            platforms.create(820, 280, 'ground2');
         
             if(selectedAvatar==="avatar1"){
                 player = this.physics.add.sprite(200, 420, 'dude1');
@@ -387,11 +417,6 @@ function ejecutarJuego(){
                 child.anims.play('walkGallina', true);
             });
 
-            //para movimiento del coyote
-            this.playerMovements = []; // Guarda los movimientos del jugador
-            this.movementDelay = 3000; // 3 segundos en milisegundos
-            this.lastMoveTime = 0;
-        
             // coyote
             this.anims.create({
                 key: 'walkCoyote',
@@ -399,45 +424,39 @@ function ejecutarJuego(){
                 frameRate: 10,
                 repeat: -1
             });
+            
+            //para movimiento del coyote
+            this.coyoteStartedFollowing = false;
 
-            coyote=this.physics.add.sprite(50, 420, 'coyote');
+            coyote = this.physics.add.sprite(100, 440, 'coyote');
             coyote.setBounce(0.2);
             coyote.setCollideWorldBounds(true);
             coyote.anims.play('walkCoyote');
-
+        
             // Colisiones
             this.physics.add.collider(player, platforms);
             this.physics.add.collider(gallinas, platforms);
             this.physics.add.collider(coyote, platforms);
+            this.physics.add.collider(player, coyote, this.choqueCoyote, null, this);
             this.physics.add.overlap(player, gallinas, this.colectarGallinas, null, this);
-            this.physics.add.collider(player, coyote, this.hitBomb, null, this);
+
+            //da 2 seg de ventaja al jugador y luego empieza a seguir sus movimientos
+            this.time.delayedCall(2000, () => {
+                this.coyoteStartedFollowing = true;
+            });
         }
         
         update() {
+            //si pierde
             if (gameOver && !this.hasHandledGameOver) {
                 this.hasHandledGameOver = true; // para que no se llame muchas veces
-                
-                //Game over
-                let overlay = this.add.graphics().setDepth(10);
-                overlay.fillStyle(0x000000, 0.5); // Color negro con opacidad
-                overlay.fillRect(0, 0, this.cameras.main.width, this.cameras.main.height);
-                // texto de game over
-                let txt = this.add.image(400, 300, 'text').setDepth(11);
-    
-                this.tweens.add({
-                    targets: txt,
-                    y: 130,
-                    duration: 1000,
-                    ease: 'Sine.easeInOut',
-                    yoyo: true,
-                    repeat: -1
-                });
-    
-                //boton de regresar
-    
+                GameOver(this);
             }
         
             if (!gameOver) {
+                //si no pierde
+
+                //movimiento del jugador
                 if (cursors.left.isDown) {
                     player.setVelocityX(-160);
                     player.anims.play('left', true);
@@ -453,6 +472,7 @@ function ejecutarJuego(){
                     player.setVelocityY(-330);
                 }
 
+                //para que al llegar al borde, las gallinas giren
                 gallinas.children.iterate(child => {
                     if (child.body.velocity.x > 0) {
                         child.setFlipX(false);
@@ -461,41 +481,26 @@ function ejecutarJuego(){
                     }
                 });
 
-                let movement = {
-                    x: player.x,
-                    y: player.y,
-                    velocityX: player.body.velocity.x,
-                    velocityY: player.body.velocity.y,
-                    timestamp: this.time.now
-                };
-                this.playerMovements.push(movement);
-
-                // Eliminar movimientos antiguos para evitar que crezca infinito
-                while (this.playerMovements.length > 0 && this.time.now - this.playerMovements[0].timestamp > this.movementDelay + 1000) {
-                    this.playerMovements.shift();
-                }
-
-                // Coyote sigue con 3 segundos de retraso
-                let delayedMovement = this.playerMovements.find(m => this.time.now - m.timestamp >= this.movementDelay);
-                if (delayedMovement) {
-                    coyote.setVelocityX(delayedMovement.velocityX);
-                    if (coyote.body.touching.down && delayedMovement.velocityY < -200) {
-                        // Simula un salto solo si el jugador había saltado
+                //movimiento del coyote
+                if (this.coyoteStartedFollowing) {
+                    coyote.setVelocityX((player.body.velocity.x)*2); //se mueve al doble de la velocidad del player
+                
+                    // Saltar si el jugador salta
+                    if (coyote.body.touching.down && player.body.velocity.y < -200) {
                         coyote.setVelocityY(-330);
                     }
-                }
-
-                if (delayedMovement) {
-                    if (delayedMovement.velocityX < 0) {
+                
+                    // Animación coyote
+                    if (player.body.velocity.x < 0) {
                         coyote.anims.play('walkCoyote', true);
                         coyote.setFlipX(true);
-                    } else if (delayedMovement.velocityX > 0) {
+                    } else if (player.body.velocity.x > 0) {
                         coyote.anims.play('walkCoyote', true);
                         coyote.setFlipX(false);
                     } else {
                         coyote.anims.stop();
                     }
-                }
+                }             
             }
         }    
     
@@ -516,7 +521,6 @@ function ejecutarJuego(){
                     if (Phaser.Math.Between(0, 1) === 0) velocidadX *= -1;
                     child.setVelocityX(velocidadX);
 
-                    // Reproducir animación
                     child.anims.play('walkGallina', true);
 
                     xG+=separacion;
@@ -524,7 +528,7 @@ function ejecutarJuego(){
             }
         }
     
-        hitBomb(player, obj) {
+        choqueCoyote(player) {
             this.physics.pause();
             player.setTint(0xff0000);
             player.anims.play('turn');
@@ -538,6 +542,7 @@ function ejecutarJuego(){
         type: Phaser.AUTO,
         width: 800,
         height: 600,
+        parent: 'gameContainer',
         physics: {
             default: 'arcade',
             arcade: {
@@ -549,4 +554,37 @@ function ejecutarJuego(){
     };
 
     game = new Phaser.Game(config);
+
+    function GameOver(scene){
+        let overlay = scene.add.graphics().setDepth(10);
+        overlay.fillStyle(0x000000, 0.5); // Color negro con opacidad
+        overlay.fillRect(0, 0, scene.cameras.main.width, scene.cameras.main.height);
+        // texto de game over
+        let txt = scene.add.image(400, 300, 'text').setDepth(11);
+    
+        scene.tweens.add({
+            targets: txt,
+            y: 130,
+            duration: 1000,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1
+        });
+    
+        //boton de regresar
+        let btnVolver = scene.add.image(400, 480, 'btnVolver').setDepth(12).setInteractive();
+        btnVolver.setScale(0.4); // Puedes ajustar el tamaño si es necesario
+    
+        btnVolver.on('pointerover', () => {
+            btnVolver.setScale(0.5); // Efecto al pasar el mouse
+        });
+    
+        btnVolver.on('pointerout', () => {
+            btnVolver.setScale(0.4); // Vuelve al tamaño normal
+        });
+    
+        btnVolver.on('pointerdown', () => {
+            window.location.reload();  
+        });
+    }
 }

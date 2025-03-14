@@ -1,7 +1,14 @@
 :root{
     --bgColor1: #C7D9DD;
     --bgColor2: #F6F4F0;
+    --bgColor3: #FFE6C9;
+    --bgColor4: #D2665A;
+    --bgColor5: #FFF0BD;
+
     --txtColor1: #4DA1A9;
+    --txtColor2: #E52020;
+    --txtColor3: #A31D1D;
+    --txtColor4: #FBA518;
 }
 
 body {
@@ -75,14 +82,35 @@ body {
     transform: scale(1.1);
 }
 
-/*Pantalla para elegir el avatar*/
-#pantallaAvatar{
+/*Generalidades*/
+.txt-format{
     font-family: "Jersey 10", sans-serif;
     font-weight: 400;
     font-style: normal;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.txt-format h1{
+    font-size: 80px;
+    margin: 0;
+}
+
+.txt-format h2{
+    font-size: 40px;
+    margin: 0;
+}
+
+.txt-format p{
+    font-size: 25px;
+    line-height: 1; 
+    margin: 0;
+}
+
+/*Pantalla para elegir el avatar*/
+#pantallaAvatar{
     background-color: var(--bgColor1);
     color: var(--txtColor1);
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     height: 600px;
     width: 800px;
     display: grid;
@@ -93,22 +121,11 @@ body {
 
     grid-template-areas: "instrucciones  instrucciones"
                          "avatares       dropzone"
-                         "boton1         boton2";
+                         "botones        botones";
 }
 
-.instrucciones{
+.--Ainstrucciones{
     grid-area: instrucciones;
-    text-align: center;
-}
-
-.instrucciones > h1{
-    font-size: 80px;
-    margin: 0;
-}
-
-.instrucciones > p{
-    font-size: 40px;
-    margin: 0;
 }
 
 #avatares{
@@ -126,18 +143,13 @@ body {
     transition: transform 0.3s ease;
 }
 
-#avatar1:hover:not(.avatar-fixed),
-#avatar2:hover:not(.avatar-fixed) {
+#avatar1:hover,
+#avatar2:hover {
     transform: scale(1.1);
 }
 
-.avatar-fixed:hover {
-    transform: none !important;
-    cursor: default;
-}
-
 #dropzone{
-    height: 340px;
+    height: 380px;
     grid-area: dropzone;
     display: flex;
     flex-direction: row;
@@ -146,6 +158,14 @@ body {
     background-color: var(--bgColor2);
     box-shadow: 2px 2px 5px rgb(0, 0, 0, 0.2);
     border-radius: 5px;
+}
+
+.btns-avatar{
+    grid-area: botones;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 #selectAvtr,
@@ -169,12 +189,96 @@ body {
     transform: scale(1.1);
 }
 
-#regresarInicio{
-    grid-area: boton1;
-    justify-content: left;
+/*Pantalla sobre el modo de juego*/
+#pantallaInstrucciones{
+    background-color: var(--bgColor3);
+    color: var(--txtColor2);
+    height: 600px;
+    width: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-#selectAvtr{
-    grid-area: boton2;
-    justify-content: right;
+#pantallaInstrucciones .txt-format{
+    width: 80%;
+}
+
+#pantallaInstrucciones .txt-format p{
+    color: var(--txtColor3);
+    font-size: 20px;
+}
+
+.contenido-Instrucciones{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: center;
+    align-items: center;
+}
+
+.conteinerI{
+    background-color: var(--bgColor4);
+    color: white;
+    box-shadow: 2px 2px 5px rgb(0, 0, 0, 0.2);
+    border-radius: 5px;
+    height: 300px;
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#pantallaInstrucciones .txt-format .conteinerI p{
+    color: white;
+    font-size: 18px;
+    text-align: justify;
+}
+
+.btns-instrucciones{
+    width: 90%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+/*Pantalla de creditos*/
+#pantallaCreditos{
+    background-color: var(--bgColor5);
+    color: var(--txtColor4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 800px;
+    height: 600px;
+}
+
+.infoContainer{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--txtColor4);
+    border-radius: 10px;
+    margin: 10px;
+    padding: 10px;
+}
+
+.rafa_cami img{
+    width: auto;
+    height: 250px;
+    border-radius: 5px;
+    margin: 15px;
+    box-shadow: 2px 2px 5px rgb(0, 0, 0, 0.2);
+}
+
+.btns-creditos{
+    width: 90%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
 }
