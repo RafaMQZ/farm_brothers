@@ -1,4 +1,8 @@
 var selectedAvatar;
+var nombre;
+let scores = [{ usuario: "", score: 0 }];
+localStorage.setItem('scores', JSON.stringify(scores));
+
 
 /* Para uso de canvas ---------------------------------------------------------------------- */
 let canvas = document.getElementById("pantallaInicio");
@@ -67,6 +71,10 @@ function backMain1(){
         dropzone.innerHTML = ""; 
     }
 }
+function backToPantalla_Avatar(){
+    document.getElementById('pantallaUsuario').style.display = 'none';
+    document.getElementById('pantallaAvatar').style.display = 'grid';
+}
 
 /* Para drag and drop ---------------------------------------------------------------------- */
 function allowDrop(ev) {
@@ -100,23 +108,15 @@ document.getElementById("dropzone").addEventListener("drop", drop);
 function selectAvatar(){
     if(selectedAvatar){
         if(selectedAvatar === "avatar1"){
-            Swal.fire({
-                icon: "success",
-                title: "Avatar elegido!",
-                text: "Puedes continuar"
-            });
+
             document.getElementById('pantallaAvatar').style.display = 'none';
             
         } else if (selectedAvatar === "avatar2"){
-            Swal.fire({
-                icon: "success",
-                title: "Avatar elegido!",
-                text: "Puedes continuar"
-            });
             document.getElementById('pantallaAvatar').style.display = 'none';
         }
-        
-        ejecutarLvl1();
+
+        document.getElementById('pantallaAvatar').style.display = 'none';
+        document.getElementById('pantallaUsuario').style.display = 'block';
     }
     else {
         Swal.fire({
@@ -258,6 +258,7 @@ function ejecutarLvl1(){
             this.physics.add.collider(bombs, platforms);
             this.physics.add.overlap(player, pacas, this.collectStar, null, this);
             this.physics.add.collider(player, bombs, this.hitBomb, null, this);
+
         }
     
         update() {
@@ -365,7 +366,7 @@ function ejecutarLvl1(){
                 repeat: -1
             });
     
-            // NUEVO: Usar 'gallinita' en vez de 'gallina' si tienes animación
+ 
             gallinas = this.physics.add.group({
                 key: 'gallinita', // ← usa gallinita si tiene spritesheet
                 repeat: 11,
@@ -409,8 +410,6 @@ function ejecutarLvl1(){
                     yoyo: true,
                     repeat: -1
                 });
-    
-                //boton de regresar
     
             }
         
@@ -465,7 +464,7 @@ function ejecutarLvl1(){
             player.setTint(0xff0000);
             player.anims.play('turn');
             gameOver = true;
-            localStorage.setItem("puntaje", score);
+
         }
     } //lvl2
 
@@ -506,6 +505,7 @@ function ejecutarLvl1(){
                 }
                 nombreTexto.setText(nombreJugador || "Tu nombre...");
             });
+            console.log(nombreJugador);
     
             // Botón
             let playButton = this.add.image(400, 300, 'start').setOrigin(0.5).setScale(0.8).setInteractive();
@@ -513,8 +513,7 @@ function ejecutarLvl1(){
             playButton.on('pointerout', () => playButton.setScale(0.8));
     
             playButton.on('pointerdown', () => {
-                if (nombreJugador.trim() !== "") {
-                    localStorage.setItem("usuario", nombreJugador.trim());
+                if (nombreJugador !== "") {
                     this.scene.start('Lvl1');
                 } else {
                     alert("Por favor, ingresa un nombre.");
@@ -537,8 +536,41 @@ function ejecutarLvl1(){
                 debug: false
             }
         },
-        scene: [PantallaUsuario, Lvl1, Lvl2]
+        scene: [Lvl1, Lvl2]
     };
+    function guardarScore(){
+        set
+    }
 
     game = new Phaser.Game(config);
+}
+
+function validarName() {
+    let nombre = document.getElementById("nombre").value;
+    let regex = /^[a-zA-Z0-9_]{4,8}$/;
+
+    if (regex.test(nombre)) {
+        let scores = JSON.parse(localStorage.getItem('scores')) || [];
+
+        // Verifica si el nombre ya existe en la lista
+        let nombreExistente = scores.some(item => item.usuario === nombre);
+
+        if (!nombreExistente) {
+            scores.push({ usuario: nombre, score: 0 });
+            localStorage.setItem('scores', JSON.stringify(scores));
+            alert("Nombre guardado con éxito.");
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "El nombre ya existe. Por favor, elige otro."
+            });
+        }
+    } else {
+        Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "El nombre debe tener entre 4 y 8 caracteres, solo letras, números o guiones bajos (_)."
+        });
+    }
 }

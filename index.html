@@ -26,10 +26,7 @@
         </div>
     </section>
 
-    <!--Pantalla para elegir username-->
-    <section>
-        
-    </section>
+    
 
     <!--Pantalla para el uso de drag and drop--> 
     <section id="pantallaAvatar" style="display: none;">
@@ -55,6 +52,28 @@
         </button>
 
         <button id="regresarInicio" onclick="backMain1()">
+            <img src="media/backBtn.png">
+        </button>
+    </section>
+
+    <!--Pantalla para elegir username-->
+    <section id="pantallaUsuario" style="display: none;">
+        <div class="instrucciones">
+            <h1>Username</h1>
+            <p>escribe tu nombre de usuario</p>
+        </div>
+        
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" />
+
+        <input type="button" src="media/playBtn.png" onclick="validarName()" value="Guardar datos" />
+
+
+        <button id="selectAvtr" onclick="ejecutarLvl1()">
+            <img src="media/nextBtn.png">
+        </button>
+
+        <button id="regresarInicio" onclick="backToPantalla_Avatar()">
             <img src="media/backBtn.png">
         </button>
     </section>

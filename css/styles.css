@@ -76,7 +76,7 @@ body {
 }
 
 /*Pantalla para elegir el avatar*/
-#pantallaAvatar{
+#pantallaAvatar, #pantallaUsuario{
     font-family: "Jersey 10", sans-serif;
     font-weight: 400;
     font-style: normal;
