@@ -1,7 +1,10 @@
 var selectedAvatar;
-var nombre;
+let nombre;
 let scores = [{ usuario: "", score: 0 }];
 localStorage.setItem('scores', JSON.stringify(scores));
+let img3Vidas;
+let img2Vidas;
+let img1Vidas;
 
 
 /* Para uso de canvas ---------------------------------------------------------------------- */
@@ -53,8 +56,13 @@ function pantalla_Avatar(){
     // Ocultar la pantalla inicial
     document.getElementById('mainPantalla').style.display = 'none';
 
+
     // Mostrar la pantalla de selección de avatar
     document.getElementById('pantallaAvatar').style.display = 'grid';
+}
+function pantalla_scores(){
+    document.getElementById('mainPantalla').style.display = 'none';
+    document.getElementById('pantallaScores').style.display = 'flex';
 }
 
 //si regresa de avatar a pantalla de inicio
@@ -70,6 +78,10 @@ function backMain1(){
         var dropzone = document.getElementById("dropzone");
         dropzone.innerHTML = ""; 
     }
+}
+function backMainScore(){
+    document.getElementById('pantallaScores').style.display = 'none';
+    document.getElementById('mainPantalla').style.display = 'block';
 }
 function backToPantalla_Avatar(){
     document.getElementById('pantallaUsuario').style.display = 'none';
@@ -152,6 +164,7 @@ function ejecutarLvl1(){
     var score = 0;
     var gameOver = false;
     var scoreText;
+    var vidas=3;
     
     class Lvl1 extends Phaser.Scene {
         constructor() {
@@ -164,6 +177,9 @@ function ejecutarLvl1(){
             this.load.image('floor1', 'media/floor1.png');
             this.load.image('paca', 'media/paca.png');
             this.load.image('bomb', 'media/bomb.png');
+            this.load.image('3vidas', 'media/bomb.png');
+            this.load.image('2vidas', 'media/bomb.png');
+            this.load.image('1vidas', 'media/bomb.png');
             this.load.spritesheet('dude1', 'media/player1.png', { frameWidth: 46, frameHeight: 90 });
             this.load.spritesheet('dude2', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
         }
@@ -262,6 +278,7 @@ function ejecutarLvl1(){
         }
     
         update() {
+
             if (gameOver) return;
     
             if (cursors.left.isDown) {
@@ -306,12 +323,15 @@ function ejecutarLvl1(){
             this.physics.pause();
             player.setTint(0xff0000);
             player.anims.play('turn');
-            gameOver = true;
+            gameOver = true;//eliminar cuando haya vidas
             localStorage.setItem("puntaje", score);
+            vidas-=1;
+            if(vidas===0)gameOver = true;
         }
     } //lvl1
 
     class Lvl2 extends Phaser.Scene {
+        
         constructor() {
             super({ key: 'Lvl2' });
         }
@@ -322,6 +342,7 @@ function ejecutarLvl1(){
             this.load.image('floor2', 'media/floor2.png');
             this.load.image('gallina', 'media/paca.png');
             this.load.image('bomb', 'media/bomb.png');
+            this.load.image('vida', 'media/paca.png');
             this.load.image('text', 'media/gameOver_txt.png'); //pantalla de game over
             this.load.spritesheet('dude1', 'media/player1.png', { frameWidth: 46, frameHeight: 90 });
             this.load.spritesheet('dude2', 'media/player2.png', { frameWidth: 46, frameHeight: 90 });
@@ -330,6 +351,7 @@ function ejecutarLvl1(){
     
         create() {
             gameOver = false; // Reinicia el estado del juego
+            var vidas=3;
         
             // Fondo
             this.add.image(400, 300, 'sky2');
@@ -343,6 +365,9 @@ function ejecutarLvl1(){
             platforms.create(610, 430, 'ground2');
             platforms.create(50, 280, 'ground2');
             platforms.create(750, 260, 'ground2');
+            img3Vidas=this.add.image(380,10,'vida');
+            img2Vidas=this.add.image(340,10,'vida');
+            img1Vidas=this.add.image(300,10,'vida');
         
             if(selectedAvatar==="avatar1"){
                 player = this.physics.add.sprite(100, 420, 'dude1');
@@ -392,6 +417,7 @@ function ejecutarLvl1(){
         }
         
         update() {
+
             if (gameOver && !this.hasHandledGameOver) {
                 this.hasHandledGameOver = true; // para que no se llame muchas veces
         
@@ -460,68 +486,24 @@ function ejecutarLvl1(){
         }
     
         hitBomb(player, bomb) {
-            this.physics.pause();
-            player.setTint(0xff0000);
-            player.anims.play('turn');
-            gameOver = true;
+            //this.physics.pause();
+            //player.setTint(0xff0000);
+            //player.anims.play('turn');
+           // gameOver = true;//eliminar cuando funcionen las vidas
+
+           // guardarScore();
+            vidas-=1;
+            if(vidas===0) gameOver = true;
+            if(vidas==2){
+                img3Vidas.destroy();
+            }else if(vidas===1){
+                img2Vidas.destroy();
+            }else if(vidas===0){
+                img1Vidas.destroy();
+            }
 
         }
     } //lvl2
-
-    class PantallaUsuario extends Phaser.Scene {
-        constructor() {
-            super({ key: 'PantallaUsuario' });
-        }
-    
-        preload() {
-            this.load.image('bg', 'media/mainBG.png');
-            this.load.image('ingresaNombre', 'media/inputname.png');
-            this.load.image('start', 'media/playBtn.png');
-    
-        }
-    
-        create() {
-      
-            this.add.image(400, 300, 'bg').setOrigin(0.5, 0.5).setDisplaySize(800, 600);
-            this.add.image(400, 100, 'ingresaNombre').setOrigin(0.5).setScale(0.8);
-    
-            //pa poner el nombre
-            let nombreJugador = "";
-            let nombreTexto = this.add.text(400, 180, "Tu nombre...", {
-                fontSize: "28px",
-                fill: "#fff",
-                backgroundColor: "#333",
-                padding: { x: 10, y: 5 },
-            })
-                .setOrigin(0.5)
-                .setInteractive();
-    
-            // Capturar teclado
-            this.input.keyboard.on('keydown', (event) => {
-                if (event.key === "Backspace") {
-                    nombreJugador = nombreJugador.slice(0, -1);
-                } else if (event.key.length === 1) {
-                    nombreJugador += event.key;
-                }
-                nombreTexto.setText(nombreJugador || "Tu nombre...");
-            });
-            console.log(nombreJugador);
-    
-            // Botón
-            let playButton = this.add.image(400, 300, 'start').setOrigin(0.5).setScale(0.8).setInteractive();
-            playButton.on('pointerover', () => playButton.setScale(0.9));
-            playButton.on('pointerout', () => playButton.setScale(0.8));
-    
-            playButton.on('pointerdown', () => {
-                if (nombreJugador !== "") {
-                    this.scene.start('Lvl1');
-                } else {
-                    alert("Por favor, ingresa un nombre.");
-                }
-            });
-    
-        }
-    } //pantallaUsuario
 
     var game; //global
 
@@ -539,14 +521,21 @@ function ejecutarLvl1(){
         scene: [Lvl1, Lvl2]
     };
     function guardarScore(){
-        set
+        let jugadores = JSON.parse(localStorage.getItem("jugadores")) || [];
+        console.log(nombre,"-",score);
+
+        // Agregamos el nuevo jugador a la lista
+        jugadores.push({ usuario: nombre, score: score });
+
+        // Guardamos la lista actualizada en el localStorage
+        localStorage.setItem("jugadores", JSON.stringify(jugadores));
     }
 
     game = new Phaser.Game(config);
 }
 
 function validarName() {
-    let nombre = document.getElementById("nombre").value;
+    nombre = document.getElementById("nombre").value;
     let regex = /^[a-zA-Z0-9_]{4,8}$/;
 
     if (regex.test(nombre)) {
@@ -556,9 +545,13 @@ function validarName() {
         let nombreExistente = scores.some(item => item.usuario === nombre);
 
         if (!nombreExistente) {
-            scores.push({ usuario: nombre, score: 0 });
-            localStorage.setItem('scores', JSON.stringify(scores));
-            alert("Nombre guardado con éxito.");
+            Swal.fire({
+                icon: "success",
+                title: "nombre registrado",
+                text: "continuar al juego"
+            });
+            document.getElementById('pantallaUsuario').style.display = 'none';
+            ejecutarLvl1();
         } else {
             Swal.fire({
                 icon: "error",
@@ -574,3 +567,4 @@ function validarName() {
         });
     }
 }
+

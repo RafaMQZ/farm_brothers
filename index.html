@@ -16,11 +16,10 @@
     <section id="mainPantalla">
         <div class="canvasContainer">
             <canvas id="pantallaInicio" width="800" height="600"></canvas>
-            
             <div class="btns-main">
                 <button id="PlayBtn" onclick="pantalla_Avatar()"><img src="media/playBtn.png"></button>
                 <button id="InstrBtn" ><img src="media/instructionsBtn.png"></button>
-                <button id="ScoresBtn" onclick="window.location.href='scores.html'"><img src="media/scoresBtn.png"></button>
+                <button id="ScoresBtn" onclick="pantalla_scores()"><img src="media/scoresBtn.png"></button>
                 <button id="CreditsBtn"><img src="media/creditsBtn.png"></button>
             </div>
         </div>
@@ -56,27 +55,88 @@
         </button>
     </section>
 
-    <!--Pantalla para elegir username-->
+    <!--Pantalla para username-->
     <section id="pantallaUsuario" style="display: none;">
         <div class="instrucciones">
             <h1>Username</h1>
             <p>escribe tu nombre de usuario</p>
         </div>
-        
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" />
+        <div class="vstack gap-3" >    <!--usando bootstrap-->
+            <div class="p-2">
+                        <!--usando bootstrap tambien-->
+                <input class="form-control" type="text" id="nombre" placeholder="ingresa username aqui"/>
+            </div>
+            <div class="p-2" ><!--mas bootstrap-->
+                <button class=" btn-pixel" onclick="validarName()">
+                    Jugar
+                </button>
+            </div>
+            <div class="p-2">
+                <button id="regresarInicio" onclick="backToPantalla_Avatar()">
+                    <img src="media/backBtn.png">
+                </button>
+            </div>
+          </div>
+    </section>
 
-        <input type="button" src="media/playBtn.png" onclick="validarName()" value="Guardar datos" />
-
-
-        <button id="selectAvtr" onclick="ejecutarLvl1()">
-            <img src="media/nextBtn.png">
-        </button>
-
-        <button id="regresarInicio" onclick="backToPantalla_Avatar()">
-            <img src="media/backBtn.png">
+    <!--Pantalla para scores-->
+    <section id="pantallaScores" style="display: none;">
+        <div class="instrucciones">
+            <h1>Scores</h1>
+        </div>
+    
+        <div class="score-container">
+            <table class="score">
+                <thead>
+                    <tr>
+                        <th colspan="3">Puntajes</th>
+                    </tr>
+                </thead>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Usuario</th>
+                        <th>Puntuación</th>
+                    </tr>
+                </thead>
+                <tbody id="scoreTableBody">
+                    <!-- Datos dinámicos -->
+                </tbody>
+            </table>
+        </div>
+    
+        <button id="regresarInicio" class="btn btn-success mt-3" onclick="backMainScore()">
+            <img src="media/backBtn.png" alt="Regresar"> Regresar
         </button>
     </section>
+    <script>
+        const scoreTableBody = document.getElementById("scoreTableBody");
+        let jugadores = JSON.parse(localStorage.getItem("jugadores")) || [];
+    
+        // Ordenamos de mayor a menor puntaje
+        jugadores.sort((a, b) => b.score - a.score);
+    
+        scoreTableBody.innerHTML = ""; // Limpiamos la tabla antes de llenarla
+    
+        // Llenamos la tabla con los datos y aplicamos estilos al top 3
+        jugadores.forEach((jugador, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${jugador.usuario}</td>
+                <td>${jugador.score}</td>
+            `;
+            if (index === 0) row.classList.add('top1');
+            else if (index === 2) row.classList.add('top3');
+            else if (index === 1) row.classList.add('top2');
+    
+            scoreTableBody.appendChild(row);
+        });
+    
+        function backMainScore() {
+            window.location.href = 'index.html';
+        }
+    </script>
 
     <script src="js/settings.js"></script>
     <!--Para BootStrap-->
